@@ -1,0 +1,413 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root{
+
+  --cream:#f6efe8;
+  --brown:#3b241c;
+  --gold:#c9a35a;
+
+}
+
+/* PAGE */
+
+.page-wrapper{
+
+  width:100%;
+  min-height:100vh;
+  background:var(--cream);
+
+}
+
+/* HERO */
+
+.page-hero{
+
+  width:100%;
+  height:90vh;
+
+  position:relative;
+
+  background-size:cover;
+  background-position:center;
+
+  display:flex;
+  align-items:center;
+
+  padding:0 8%;
+
+}
+
+.cakes-hero{
+
+  background-image:
+  url("https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1400");
+
+}
+
+.desserts-hero{
+
+  background-image:
+  url("https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=1400");
+
+}
+
+.brownies-hero{
+
+  background-image:
+  url("https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=1400");
+
+}
+
+.cookies-hero{
+
+  background-image:
+  url("https://images.unsplash.com/photo-1499636136210-6f4ee915583e?q=80&w=1400");
+
+}
+
+.page-overlay{
+
+  position:absolute;
+  inset:0;
+
+  background:
+  linear-gradient(
+    to right,
+    rgba(20,10,5,0.88),
+    rgba(20,10,5,0.35)
+  );
+
+}
+
+.page-hero-content{
+
+  position:relative;
+  z-index:2;
+
+  max-width:650px;
+
+}
+
+.page-hero-content span{
+
+  color:var(--gold);
+
+  letter-spacing:4px;
+
+  font-size:14px;
+
+  font-weight:600;
+
+}
+
+.page-hero-content h1{
+
+  font-size:90px;
+
+  color:white;
+
+  line-height:1;
+
+  margin:20px 0;
+
+  font-family:
+  'Playfair Display',
+  serif;
+
+}
+
+.page-hero-content p{
+
+  color:#eee;
+
+  font-size:20px;
+
+  line-height:1.8;
+
+  max-width:520px;
+
+}
+
+/* PRODUCTS */
+
+.products-section{
+
+  padding:120px 6%;
+
+}
+
+.section-title{
+
+  text-align:center;
+
+  margin-bottom:70px;
+
+}
+
+.section-title span{
+
+  color:var(--gold);
+
+  letter-spacing:4px;
+
+  font-size:14px;
+
+  font-weight:600;
+
+}
+
+.section-title h2{
+
+  font-size:68px;
+
+  color:var(--brown);
+
+  margin-top:15px;
+
+  font-family:
+  'Playfair Display',
+  serif;
+
+}
+
+/* GRID */
+
+.products-grid{
+
+  display:grid;
+
+  grid-template-columns:
+  repeat(3,1fr);
+
+  gap:35px;
+
+}
+
+/* CARD */
+
+.luxury-card{
+
+  background:white;
+
+  border-radius:35px;
+
+  overflow:hidden;
+
+  transition:0.5s ease;
+
+  box-shadow:
+  0 15px 35px rgba(0,0,0,0.08);
+
+}
+
+.luxury-card:hover{
+
+  transform:
+  translateY(-12px);
+
+  box-shadow:
+  0 25px 50px rgba(0,0,0,0.15);
+
+}
+
+/* IMAGE */
+
+.product-image{
+
+  width:100%;
+  height:420px;
+
+  overflow:hidden;
+
+  position:relative;
+
+}
+
+.product-image img{
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  transition:1s ease;
+
+}
+
+.luxury-card:hover img{
+
+  transform:
+  scale(1.08);
+
+}
+
+/* OVERLAY */
+
+.product-overlay{
+
+  position:absolute;
+
+  inset:0;
+
+  background:
+  rgba(0,0,0,0.45);
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:center;
+  align-items:center;
+
+  gap:18px;
+
+  opacity:0;
+
+  transition:0.5s ease;
+
+}
+
+.luxury-card:hover
+.product-overlay{
+
+  opacity:1;
+
+}
+
+.product-overlay button{
+
+  padding:16px 40px;
+
+  border:none;
+
+  border-radius:40px;
+
+  background:var(--gold);
+
+  color:white;
+
+  font-size:16px;
+
+  font-weight:600;
+
+  cursor:pointer;
+
+  transition:0.4s;
+
+}
+
+.product-overlay button:hover{
+
+  transform:
+  scale(1.05);
+
+}
+
+.cart-btn{
+
+  background:white !important;
+
+  color:var(--brown) !important;
+
+}
+
+/* CONTENT */
+
+.product-content{
+
+  padding:35px 25px;
+
+  text-align:center;
+
+}
+
+.product-content span{
+
+  color:var(--gold);
+
+  letter-spacing:3px;
+
+  font-size:13px;
+
+  font-weight:600;
+
+}
+
+.product-content h3{
+
+  font-size:34px;
+
+  color:var(--brown);
+
+  margin:18px 0;
+
+  font-family:
+  'Playfair Display',
+  serif;
+
+}
+
+.product-content p{
+
+  color:var(--gold);
+
+  font-size:28px;
+
+  font-weight:700;
+
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+
+  .products-grid{
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+  }
+
+  .page-hero-content h1{
+
+    font-size:65px;
+
+  }
+
+}
+
+@media(max-width:768px){
+
+  .products-grid{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .page-hero{
+
+    height:70vh;
+
+    padding:0 25px;
+
+  }
+
+  .page-hero-content h1{
+
+    font-size:48px;
+
+  }
+
+  .section-title h2{
+
+    font-size:42px;
+
+  }
+
+  .product-image{
+
+    height:320px;
+
+  }
+
+}
