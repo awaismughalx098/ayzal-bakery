@@ -4,28 +4,35 @@ require("express");
 const router =
 express.Router();
 
-const OpenAI =
-require("openai").default;
-
 /* OPENAI */
 
-const openai =
-new OpenAI({
+let openai =
+null;
 
-  apiKey:
-  process.env.OPENAI_API_KEY
+if(process.env.OPENAI_API_KEY){
 
-});
+  const OpenAI =
+  require("openai").default;
 
-/* TEST */
+  openai =
+  new OpenAI({
 
-console.log(
+    apiKey:
+    process.env.OPENAI_API_KEY
 
-  "OPENAI KEY:",
+  });
 
-  process.env.OPENAI_API_KEY
+  console.log(
+    "OpenAI client initialized successfully"
+  );
 
-);
+}else{
+
+  console.warn(
+    "OPENAI_API_KEY is not set — AI features will be unavailable"
+  );
+
+}
 
 /* GENERATE IMAGE */
 
@@ -34,6 +41,19 @@ router.post(
   "/generate-image",
 
   async(req,res)=>{
+
+    if(!openai){
+
+      return res.status(503).json({
+
+        success:false,
+
+        message:
+        "AI features are currently unavailable. OPENAI_API_KEY is not configured."
+
+      });
+
+    }
 
     try{
 
