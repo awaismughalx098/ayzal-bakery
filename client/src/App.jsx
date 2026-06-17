@@ -23,6 +23,7 @@ import Cart
 from "./pages/Cart";
 import AdminLogin
 from "./pages/AdminLogin";
+import OrderPage from "./pages/OrderPage";
 
 function App(){
 
@@ -39,7 +40,10 @@ function App(){
         path="/cakes"
         element={<Cakes />}
       />
-
+<Route
+  path="/order"
+  element={<OrderPage />}
+/>
       <Route
         path="/desserts"
         element={<Desserts />}
