@@ -17,27 +17,33 @@ const Categories = () => {
   const data = [
 
     {
-      title:"Cakes",
-      icon:<GiCakeSlice />,
-      path:"/cakes"
+      title: "Cakes",
+      icon: <GiCakeSlice />,
+      path: "/cakes"
     },
 
     {
-      title:"Desserts",
-      icon:<FaIceCream />,
-      path:"/desserts"
+      title: "Desserts",
+      icon: <FaIceCream />,
+      path: "/desserts"
     },
 
     {
-      title:"Cupcakes",
-      icon:<GiCupcake />,
-      path:"/cakes"
+      title: "Cupcakes",
+      icon: <GiCupcake />,
+      path: "/cakes"
     },
 
     {
-      title:"Cookies",
-      icon:<GiCookie />,
-      path:"/cookies"
+      title: "Cookies",
+      icon: <GiCookie />,
+      path: "/cookies"
+    },
+
+    {
+      title: "Biscuits",
+      icon: <GiCookie />,
+      path: "/biscuits"
     }
 
   ];
@@ -54,7 +60,7 @@ const Categories = () => {
       <div className="category-grid">
 
         {
-          data.map((item,index)=>(
+          data.map((item, index) => (
 
             <button
               className="category-card"

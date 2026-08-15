@@ -269,17 +269,39 @@ const [openAI, setOpenAI] = useState(false);
 
             </div>
 
+<div
+  className="Catagory-card"
+  onClick={() => navigate("/biscuits")}
+>
+
+  <img
+    src="https://images"
+    alt="Biscuits"
+  />
+
+  <div className="Catagory-overlay">
+
+    <h2>
+      Biscuits
+    </h2>
+
+    <p>
+    Crispy & buttery premium biscuits
+    </p>
+
+  </div>
+
+</div>
           </div>
 
         </div>
 
       </section>
 
-      {/* FEATURED */}
+
 
       <Featured />
 
-      {/* AI SECTION */}
 
       <section className="ai-section">
 

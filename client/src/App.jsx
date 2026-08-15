@@ -18,6 +18,8 @@ from "./pages/Brownies";
 
 import Cookies
 from "./pages/Cookies";
+import Biscuits from "./pages/Biscuits";
+
 
 import Cart
 from "./pages/Cart";
@@ -48,7 +50,10 @@ function App(){
         path="/desserts"
         element={<Desserts />}
       />
-
+<Route
+  path="/biscuits"
+  element={<Biscuits />}
+/>
       <Route
         path="/brownies"
         element={<Brownies />}
