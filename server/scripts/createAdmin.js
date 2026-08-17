@@ -9,6 +9,11 @@
    strong random one and prints it once.
 
    Passing the same email again resets the password.
+
+   To change the email as well, add --replace:
+
+     npm run create-admin -- new@email.com "Password123" --replace
+
    This app allows exactly one admin account.
    ============================================ */
 
@@ -23,11 +28,19 @@ const mongoose = require("mongoose");
 const Admin = require("../models/Admin");
 
 const run = async () => {
-  const email = String(process.argv[2] || "")
+  const args = process.argv.slice(2);
+
+  /* --replace lets a single existing admin change its
+     email, instead of being told to delete it first */
+  const replace = args.includes("--replace");
+
+  const positional = args.filter((a) => !a.startsWith("--"));
+
+  const email = String(positional[0] || "")
     .toLowerCase()
     .trim();
 
-  let password = process.argv[3];
+  let password = positional[1];
   let generated = false;
 
   if (!email || !email.includes("@")) {
@@ -70,27 +83,42 @@ const run = async () => {
     const count = await Admin.countDocuments();
 
     if (count > 0) {
-      const current = await Admin.findOne().select("email");
+      const current = await Admin.findOne().select("+password");
 
-      console.error(
-        `\nAn admin already exists: ${current.email}\n\n` +
-          `  This app allows only one admin account.\n` +
-          `  To reset the password, pass the same email again:\n\n` +
-          `    npm run create-admin -- ${current.email} "NewPassword123"\n\n` +
-          `  To use a different email, delete the old account from the database first.\n`
-      );
+      if (replace) {
+        /* Same account, new email and password. Keeping the
+           document means the one-admin rule still holds. */
+        const oldEmail = current.email;
 
-      await mongoose.disconnect();
-      process.exit(1);
+        current.email = email;
+        current.password = password;
+
+        await current.save();
+
+        console.log(`\nAdmin email changed: ${oldEmail} -> ${email}`);
+        console.log("Password updated at the same time.");
+      } else {
+        console.error(
+          `\nAn admin already exists: ${current.email}\n\n` +
+            `  This app allows only one admin account.\n` +
+            `  To reset its password, pass the same email again:\n\n` +
+            `    npm run create-admin -- ${current.email} "NewPassword123"\n\n` +
+            `  To switch to ${email || "a different email"}, add --replace:\n\n` +
+            `    npm run create-admin -- ${email || "new@email.com"} "NewPassword123" --replace\n`
+        );
+
+        await mongoose.disconnect();
+        process.exit(1);
+      }
+    } else {
+      await Admin.create({
+        email,
+        password,
+        name: "Munch Box Admin",
+      });
+
+      console.log(`\nAdmin created: ${email}`);
     }
-
-    await Admin.create({
-      email,
-      password,
-      name: "Munch Box Admin",
-    });
-
-    console.log(`\nAdmin created: ${email}`);
   }
 
   if (generated) {
