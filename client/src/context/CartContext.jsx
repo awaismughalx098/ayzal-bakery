@@ -1,40 +1,49 @@
 import {
-  createContext,
   useState,
   useEffect
 }
 from "react";
 
-export const CartContext =
-createContext();
+import { CartContext } from "./contexts";
+
+const STORAGE_KEY = "munchbox-cart";
+
+/* Load from localStorage up front so the first
+   render does not save an empty cart over it */
+
+const loadCart = () => {
+
+  try{
+
+    const saved =
+    localStorage.getItem(STORAGE_KEY);
+
+    return saved
+      ? JSON.parse(saved)
+      : [];
+
+  }
+
+  catch(error){
+
+    console.log(error);
+
+    return [];
+
+  }
+
+};
 
 const CartProvider = ({children}) => {
 
   const [cartItems,setCartItems] =
-  useState([]);
-
-  useEffect(()=>{
-
-    const savedCart =
-    localStorage.getItem(
-      "ayzal-cart"
-    );
-
-    if(savedCart){
-
-      setCartItems(
-        JSON.parse(savedCart)
-      );
-
-    }
-
-  },[]);
+  useState(loadCart);
 
   useEffect(()=>{
 
     localStorage.setItem(
 
-      "ayzal-cart",
+      STORAGE_KEY,
 
       JSON.stringify(cartItems)
 
@@ -42,55 +51,71 @@ const CartProvider = ({children}) => {
 
   },[cartItems]);
 
-  /* ADD */
+  /* ADD
+     Note: the functional update is required, otherwise
+     two quick clicks lose one of the items. */
 
   const addToCart =
   (product)=>{
 
-    const existing =
-    cartItems.find(
+    setCartItems((prev)=>{
 
-      item =>
-      item._id === product._id
+      const existing =
+      prev.find(
+        item => item._id === product._id
+      );
 
-    );
+      if(existing){
 
-    if(existing){
-
-      setCartItems(
-
-        cartItems.map(item =>
+        return prev.map(item =>
 
           item._id === product._id
 
           ? {
               ...item,
-              quantity:
-              item.quantity + 1
+              quantity: item.quantity + 1
             }
 
           : item
 
-        )
+        );
 
-      );
+      }
 
-    }
-
-    else{
-
-      setCartItems([
-
-        ...cartItems,
-
+      return [
+        ...prev,
         {
           ...product,
           quantity:1
         }
+      ];
 
-      ]);
+    });
 
-    }
+  };
+
+  /* QUANTITY CHANGE */
+
+  const updateQuantity =
+  (id, change)=>{
+
+    setCartItems((prev)=>
+
+      prev.map(item =>
+
+        item._id === id
+
+        ? {
+            ...item,
+            quantity:
+            Math.max(1, item.quantity + change)
+          }
+
+        : item
+
+      )
+
+    );
 
   };
 
@@ -99,18 +124,20 @@ const CartProvider = ({children}) => {
   const removeFromCart =
   (id)=>{
 
-    setCartItems(
+    setCartItems((prev)=>
 
-      cartItems.filter(
-
-        item =>
-        item._id !== id
-
+      prev.filter(
+        item => item._id !== id
       )
 
     );
 
   };
+
+  /* CLEAR */
+
+  const clearCart = () =>
+    setCartItems([]);
 
   /* TOTAL */
 
@@ -120,8 +147,18 @@ const CartProvider = ({children}) => {
     (acc,item)=>
 
       acc +
-      item.price *
+      Number(item.price) *
       item.quantity,
+
+    0
+
+  );
+
+  const totalItems =
+  cartItems.reduce(
+
+    (acc,item)=>
+      acc + item.quantity,
 
     0
 
@@ -135,8 +172,11 @@ const CartProvider = ({children}) => {
 
         cartItems,
         addToCart,
+        updateQuantity,
         removeFromCart,
-        totalPrice
+        clearCart,
+        totalPrice,
+        totalItems
 
       }}
 

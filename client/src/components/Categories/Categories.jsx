@@ -1,46 +1,30 @@
 import "./Categories.css";
 
 import {
-  GiCakeSlice,
-  GiCupcake,
-  GiCookie
+  GiHamburger,
+  GiFrenchFries,
+  GiChickenLeg,
+  GiKetchup,
+  GiSodaCan
 } from "react-icons/gi";
 
-import { FaIceCream } from "react-icons/fa";
-
 import { useNavigate } from "react-router-dom";
+
+import { CATEGORIES } from "../../data/menu";
+
+/* har category slug ka icon */
+
+const ICONS = {
+  burgers: <GiHamburger />,
+  fries: <GiFrenchFries />,
+  wraps: <GiChickenLeg />,
+  dips: <GiKetchup />,
+  drinks: <GiSodaCan />
+};
 
 const Categories = () => {
 
   const navigate = useNavigate();
-
-  const data = [
-
-    {
-      title:"Cakes",
-      icon:<GiCakeSlice />,
-      path:"/cakes"
-    },
-
-    {
-      title:"Desserts",
-      icon:<FaIceCream />,
-      path:"/desserts"
-    },
-
-    {
-      title:"Cupcakes",
-      icon:<GiCupcake />,
-      path:"/cakes"
-    },
-
-    {
-      title:"Cookies",
-      icon:<GiCookie />,
-      path:"/cookies"
-    }
-
-  ];
 
   return (
 
@@ -49,24 +33,22 @@ const Categories = () => {
       id="categories"
     >
 
-      <h2>Our Categories</h2>
-
-      <div className="category-grid">
+      <div className="category-strip">
 
         {
-          data.map((item,index)=>(
+          CATEGORIES.map((cat) => (
 
             <button
               className="category-card"
-              key={index}
-              onClick={() => navigate(item.path)}
+              key={cat.slug}
+              onClick={() => navigate(cat.path)}
             >
 
               <div className="icon">
-                {item.icon}
+                {ICONS[cat.slug]}
               </div>
 
-              <h3>{item.title}</h3>
+              <h3>{cat.name}</h3>
 
             </button>
 
@@ -78,6 +60,7 @@ const Categories = () => {
     </section>
 
   );
+
 };
 
 export default Categories;

@@ -2,12 +2,19 @@ import React from "react";
 
 import ReactDOM from "react-dom/client";
 
+/* THEME — must load before everything else */
+
+import "./styles/global.css";
+
 import {
   BrowserRouter
 }
 from "react-router-dom";
 
 import App from "./App.jsx";
+
+import AuthProvider
+from "./context/AuthContext.jsx";
 
 import CartProvider
 from "./context/CartContext.jsx";
@@ -20,11 +27,15 @@ ReactDOM.createRoot(
 
     <BrowserRouter>
 
-      <CartProvider>
+      <AuthProvider>
 
-        <App />
+        <CartProvider>
 
-      </CartProvider>
+          <App />
+
+        </CartProvider>
+
+      </AuthProvider>
 
     </BrowserRouter>
 

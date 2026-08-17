@@ -1,413 +1,437 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
-
-:root{
-
-  --cream:#f6efe8;
-  --brown:#3b241c;
-  --gold:#c9a35a;
-
-}
-
-/* PAGE */
+/* ================= CATEGORY PAGE (mobile first) ================= */
 
 .page-wrapper{
-
-  width:100%;
-  min-height:100vh;
   background:var(--cream);
-
 }
 
-/* HERO */
+/* ---------- PAGE HERO ---------- */
 
 .page-hero{
-
-  width:100%;
-  height:90vh;
-
   position:relative;
-
-  background-size:cover;
-  background-position:center;
-
   display:flex;
-  align-items:center;
-
-  padding:0 8%;
-
+  align-items:flex-end;
+  overflow:hidden;
+  background:var(--maroon-darkest);
 }
 
-.cakes-hero{
-
-  background-image:
-  url("https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1400");
-
-}
-
-.desserts-hero{
-
-  background-image:
-  url("https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=1400");
-
-}
-
-.brownies-hero{
-
-  background-image:
-  url("https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=1400");
-
-}
-
-.cookies-hero{
-
-  background-image:
-  url("https://images.unsplash.com/photo-1499636136210-6f4ee915583e?q=80&w=1400");
-
+.page-hero-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .page-overlay{
-
   position:absolute;
   inset:0;
-
-  background:
-  linear-gradient(
-    to right,
-    rgba(20,10,5,0.88),
-    rgba(20,10,5,0.35)
+  background:linear-gradient(
+    180deg,
+    rgba(46,5,7,.9) 0%,
+    rgba(46,5,7,.62) 45%,
+    rgba(46,5,7,.94) 100%
   );
-
 }
 
 .page-hero-content{
-
   position:relative;
   z-index:2;
-
-  max-width:650px;
-
+  padding:calc(var(--nav-h) + 44px) 18px 40px;
 }
 
 .page-hero-content span{
-
+  display:inline-block;
+  font-size:.68rem;
+  font-weight:700;
+  letter-spacing:3.4px;
+  text-transform:uppercase;
   color:var(--gold);
-
-  letter-spacing:4px;
-
-  font-size:14px;
-
-  font-weight:600;
-
+  margin-bottom:10px;
 }
 
 .page-hero-content h1{
-
-  font-size:90px;
-
-  color:white;
-
+  font-family:var(--display);
+  font-size:clamp(2rem, 10vw, 4.4rem);
+  color:var(--light);
   line-height:1;
-
-  margin:20px 0;
-
-  font-family:
-  'Playfair Display',
-  serif;
-
 }
 
 .page-hero-content p{
-
-  color:#eee;
-
-  font-size:20px;
-
-  line-height:1.8;
-
+  margin-top:12px;
   max-width:520px;
-
+  color:rgba(255,243,226,.8);
+  font-size:.92rem;
+  line-height:1.65;
 }
 
-/* PRODUCTS */
+/* ---------- PRODUCTS ---------- */
 
 .products-section{
-
-  padding:120px 6%;
-
+  padding:36px 0 var(--section-y);
 }
-
-.section-title{
-
-  text-align:center;
-
-  margin-bottom:70px;
-
-}
-
-.section-title span{
-
-  color:var(--gold);
-
-  letter-spacing:4px;
-
-  font-size:14px;
-
-  font-weight:600;
-
-}
-
-.section-title h2{
-
-  font-size:68px;
-
-  color:var(--brown);
-
-  margin-top:15px;
-
-  font-family:
-  'Playfair Display',
-  serif;
-
-}
-
-/* GRID */
 
 .products-grid{
-
   display:grid;
-
-  grid-template-columns:
-  repeat(3,1fr);
-
-  gap:35px;
-
+  grid-template-columns:1fr;
+  gap:16px;
 }
 
-/* CARD */
-
-.luxury-card{
-
-  background:white;
-
-  border-radius:35px;
-
+.food-card{
+  background:var(--light);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
   overflow:hidden;
-
-  transition:0.5s ease;
-
-  box-shadow:
-  0 15px 35px rgba(0,0,0,0.08);
-
+  display:flex;
+  flex-direction:column;
+  transition:.28s ease;
 }
 
-.luxury-card:hover{
-
-  transform:
-  translateY(-12px);
-
-  box-shadow:
-  0 25px 50px rgba(0,0,0,0.15);
-
-}
-
-/* IMAGE */
-
-.product-image{
-
-  width:100%;
-  height:420px;
-
-  overflow:hidden;
-
+.food-image{
   position:relative;
-
+  height:200px;
+  overflow:hidden;
+  background:#F6EBDD;
 }
 
-.product-image img{
-
+.food-image img{
   width:100%;
   height:100%;
-
   object-fit:cover;
-
-  transition:1s ease;
-
+  transition:transform .55s ease;
 }
 
-.luxury-card:hover img{
-
-  transform:
-  scale(1.08);
-
-}
-
-/* OVERLAY */
-
-.product-overlay{
-
+.food-badge{
   position:absolute;
-
-  inset:0;
-
-  background:
-  rgba(0,0,0,0.45);
-
-  display:flex;
-
-  flex-direction:column;
-
-  justify-content:center;
-  align-items:center;
-
-  gap:18px;
-
-  opacity:0;
-
-  transition:0.5s ease;
-
-}
-
-.luxury-card:hover
-.product-overlay{
-
-  opacity:1;
-
-}
-
-.product-overlay button{
-
-  padding:16px 40px;
-
-  border:none;
-
-  border-radius:40px;
-
-  background:var(--gold);
-
-  color:white;
-
-  font-size:16px;
-
-  font-weight:600;
-
-  cursor:pointer;
-
-  transition:0.4s;
-
-}
-
-.product-overlay button:hover{
-
-  transform:
-  scale(1.05);
-
-}
-
-.cart-btn{
-
-  background:white !important;
-
-  color:var(--brown) !important;
-
-}
-
-/* CONTENT */
-
-.product-content{
-
-  padding:35px 25px;
-
-  text-align:center;
-
-}
-
-.product-content span{
-
-  color:var(--gold);
-
-  letter-spacing:3px;
-
-  font-size:13px;
-
-  font-weight:600;
-
-}
-
-.product-content h3{
-
-  font-size:34px;
-
-  color:var(--brown);
-
-  margin:18px 0;
-
-  font-family:
-  'Playfair Display',
-  serif;
-
-}
-
-.product-content p{
-
-  color:var(--gold);
-
-  font-size:28px;
-
+  top:12px;
+  left:12px;
+  background:var(--maroon);
+  color:var(--cream);
+  font-size:.6rem;
   font-weight:700;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:60px;
+}
+
+.food-content{
+  padding:18px 18px 20px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+.food-content h3{
+  font-size:1.06rem;
+  font-weight:700;
+  color:var(--maroon);
+  line-height:1.3;
+}
+
+.food-content p{
+  margin-top:8px;
+  font-size:.84rem;
+  line-height:1.6;
+  color:var(--muted);
+}
+
+.food-foot{
+  margin-top:auto;
+  padding-top:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.food-price{
+  font-family:var(--display);
+  font-size:1.4rem;
+  color:var(--red);
+  letter-spacing:.5px;
+}
+
+.food-actions{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.food-actions .cart-btn{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(193,18,31,.1);
+  color:var(--red);
+  font-size:.92rem;
+  transition:.25s ease;
+  flex-shrink:0;
+}
+
+.food-actions .cart-btn:hover{
+  background:var(--red);
+  color:#fff;
+}
+
+.food-actions .order-btn{
+  background:var(--maroon);
+  color:var(--cream);
+  font-size:.76rem;
+  font-weight:600;
+  letter-spacing:.4px;
+  padding:11px 18px;
+  border-radius:60px;
+  transition:.25s ease;
+  white-space:nowrap;
+}
+
+.food-actions .order-btn:hover{
+  background:var(--gold);
+  color:var(--maroon-darkest);
+}
+
+/* ---------- EMPTY ---------- */
+
+.empty-state{
+  text-align:center;
+  padding:48px 22px;
+  background:var(--light);
+  border:1px dashed #E2CDB6;
+  border-radius:var(--radius-lg);
+}
+
+.empty-icon{
+  font-size:2.2rem;
+  color:#E2CDB6;
+  margin:0 auto 16px;
+}
+
+.empty-state h3{
+  font-family:var(--display);
+  font-size:1.3rem;
+  color:var(--maroon);
+  line-height:1.25;
+}
+
+.empty-state > p{
+  max-width:380px;
+  margin:12px auto 0;
+  font-size:.9rem;
+  line-height:1.65;
+  color:var(--muted);
+}
+
+.empty-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  margin-top:24px;
+}
+
+.empty-actions .btn-primary{
+  width:100%;
+  max-width:260px;
+}
+
+.empty-link{
+  background:transparent;
+  color:var(--muted);
+  font-size:.85rem;
+  padding:8px 12px;
+  transition:.2s ease;
+}
+
+.empty-link:hover{
+  color:var(--red);
+}
+
+/* ---------- CALL STRIP ---------- */
+
+.call-strip{
+  background:var(--maroon);
+  padding:34px 0;
+}
+
+.call-strip-inner{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.call-strip h2{
+  font-size:clamp(1.3rem, 6vw, 2.1rem);
+  color:var(--light);
+  line-height:1.15;
+}
+
+.call-strip p{
+  margin-top:8px;
+  color:rgba(255,243,226,.75);
+  font-size:.88rem;
+  line-height:1.55;
+}
+
+.call-strip-btn{
+  width:100%;
+}
+
+.call-strip-btn svg{
+  font-size:.85rem;
+}
+
+/* ================= 600px+ ================= */
+
+@media (min-width:600px){
+
+  .page-hero-content{
+    padding:calc(var(--nav-h) + 56px) 26px 52px;
+  }
+
+  .page-hero-content span{
+    font-size:.74rem;
+    letter-spacing:4px;
+    margin-bottom:14px;
+  }
+
+  .page-hero-content p{
+    font-size:1rem;
+    margin-top:14px;
+  }
+
+  .products-section{
+    padding:52px 0 var(--section-y);
+  }
+
+  .products-grid{
+    grid-template-columns:repeat(2, 1fr);
+    gap:20px;
+  }
+
+  .food-image{
+    height:210px;
+  }
+
+  .food-content{
+    padding:20px 22px 22px;
+  }
+
+  .food-price{
+    font-size:1.5rem;
+  }
+
+  .call-strip{
+    padding:44px 0;
+  }
+
+  .call-strip-inner{
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:26px;
+  }
+
+  .call-strip-btn{
+    width:auto;
+  }
+
+  .empty-state{
+    padding:64px 26px;
+  }
+
+  .empty-icon{
+    font-size:2.6rem;
+  }
+
+  .empty-state h3{
+    font-size:1.5rem;
+  }
+
+  .empty-actions{
+    flex-direction:row;
+    justify-content:center;
+    gap:16px;
+  }
+
+  .empty-actions .btn-primary{
+    width:auto;
+  }
 
 }
 
-/* RESPONSIVE */
+/* ================= 900px+ ================= */
 
-@media(max-width:1100px){
-
-  .products-grid{
-
-    grid-template-columns:
-    repeat(2,1fr);
-
-  }
-
-  .page-hero-content h1{
-
-    font-size:65px;
-
-  }
-
-}
-
-@media(max-width:768px){
-
-  .products-grid{
-
-    grid-template-columns:1fr;
-
-  }
+@media (min-width:900px){
 
   .page-hero{
-
-    height:70vh;
-
-    padding:0 25px;
-
+    min-height:56vh;
   }
 
-  .page-hero-content h1{
-
-    font-size:48px;
-
+  .page-hero-content{
+    padding:calc(var(--nav-h) + 64px) 32px 62px;
   }
 
-  .section-title h2{
-
-    font-size:42px;
-
+  .products-section{
+    padding:70px 0 90px;
   }
 
-  .product-image{
+  .food-card:hover{
+    transform:translateY(-7px);
+    border-color:var(--gold);
+    box-shadow:var(--shadow);
+  }
 
-    height:320px;
+  .food-card:hover .food-image img{
+    transform:scale(1.08);
+  }
 
+  .food-image{
+    height:230px;
+  }
+
+  .food-content{
+    padding:22px 24px 24px;
+  }
+
+  .food-content h3{
+    font-size:1.12rem;
+  }
+
+  .food-foot{
+    padding-top:20px;
+  }
+
+  .food-badge{
+    top:14px;
+    left:14px;
+    font-size:.66rem;
+    letter-spacing:2px;
+    padding:7px 14px;
+  }
+
+  .food-actions .cart-btn{
+    width:40px;
+    height:40px;
+  }
+
+  .call-strip{
+    padding:52px 0;
+  }
+
+}
+
+/* ================= 1100px+ ================= */
+
+@media (min-width:1100px){
+
+  .products-grid{
+    grid-template-columns:repeat(3, 1fr);
+    gap:26px;
   }
 
 }

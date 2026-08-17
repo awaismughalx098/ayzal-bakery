@@ -1,139 +1,169 @@
-
-
 import "./Home.css";
+
+import { useNavigate } from "react-router-dom";
+
 import {
-  useContext
-}
-from "react";
-import { useState } from "react";
-import {
-  CartContext
-}
-from "../context/CartContext";
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaWhatsapp,
+  FaMotorcycle,
+  FaFire,
+  FaLeaf,
+  FaStopwatch
+} from "react-icons/fa";
+
 import Navbar from "../components/Navbar/Navbar";
+import Hero from "../components/Hero/Hero";
+import Categories from "../components/Categories/Categories";
 import Featured from "../components/Featured/Featured";
 import Footer from "../components/Footer/Footer";
-import Hero from "../components/Hero/Hero";
-import AyzalAssistant from "../components/AyzalAssistant/AyzalAssistant";
+import Seo from "../seo/Seo";
+
 import {
-  useNavigate
-} from "react-router-dom";
+  BRAND,
+  CATEGORIES
+} from "../data/menu";
+
+import { useProducts } from "../hooks/useProducts";
+
+const PERKS = [
+  {
+    icon: <FaFire />,
+    title: "Made To Order",
+    text: "Every item is cooked fresh once your order comes in."
+  },
+  {
+    icon: <FaStopwatch />,
+    title: "Fast Service",
+    text: "Average wait at the counter is just 10–12 minutes."
+  },
+  {
+    icon: <FaMotorcycle />,
+    title: "Home Delivery",
+    text: "Hot delivery to your door anywhere in Okara city."
+  },
+  {
+    icon: <FaLeaf />,
+    title: "Fresh Chicken",
+    text: "Fresh chicken daily and clean cooking oil, always."
+  }
+];
 
 const Home = () => {
 
-  const navigate =
-  useNavigate();
-const [openAI, setOpenAI] = useState(false);
+  const navigate = useNavigate();
+
+  /* Menu board is built from whatever the admin
+     has added — nothing is hardcoded. */
+
+  const { products } = useProducts();
+
+  const menuGroups = CATEGORIES
+    .map((cat) => ({
+      ...cat,
+      items: products.filter(
+        (item) =>
+          item.category &&
+          item.category.toLowerCase() === cat.slug
+      )
+    }))
+    .filter((group) => group.items.length > 0);
+
   return (
 
     <>
 
+      <Seo page="home" />
+
       <Navbar />
 
-      {/* HERO SECTION */}
+      <Hero />
 
-      <section className="hero">
+      {/* ============ PERKS ============ */}
 
-        <div className="hero-overlay"></div>
+      <section className="perks">
 
-        <div className="hero-content">
+        <div className="container perks-grid">
 
-          <div className="hero-left">
+          {
+            PERKS.map((perk) => (
 
-            <p className="hero-tag">
-              Premium Bakery Experience
-            </p>
-
-            <h1>
-
-              Crafted
-              <br />
-
-              Sweetness
-              <br />
-
-              With Luxury
-
-            </h1>
-
-            <p className="hero-description">
-
-              Discover handcrafted cakes,
-              desserts, brownies and cookies
-              designed with elegance and
-              unforgettable taste.
-
-            </p>
-
-            <div className="hero-buttons">
-
-              <button
-                onClick={()=>
-                  navigate("/cakes")
-                }
+              <div
+                className="perk-card"
+                key={perk.title}
               >
 
-                Explore Cakes
+                <div className="perk-icon">
+                  {perk.icon}
+                </div>
 
-              </button>
+                <h3>{perk.title}</h3>
 
-              <button
-                className="outline-btn"
-                onClick={()=>
-                  navigate("/desserts")
-                }
-              >
-
-                View Desserts
-
-              </button>
-
-            </div>
-
-            <div className="hero-stats">
-
-              <div>
-
-                <h2>1000+</h2>
-
-                <p>
-                  Happy Clients
-                </p>
+                <p>{perk.text}</p>
 
               </div>
 
-              <div>
+            ))
+          }
 
-                <h2>250+</h2>
+        </div>
 
-                <p>
-                  Custom Cakes
-                </p>
+      </section>
 
-              </div>
+      {/* ============ CATEGORIES ============ */}
 
-              <div>
+      <Categories />
 
-                <h2>4.9★</h2>
+      {/* ============ CATEGORY SHOWCASE ============ */}
 
-                <p>
-                  Customer Rating
-                </p>
+      <section className="showcase">
 
-              </div>
+        <div className="container">
 
-            </div>
+          <div className="section-head-line">
+
+            <span>What We Serve</span>
+
+            <h2>Pick Your Craving</h2>
+
+            <p>
+              From burgers to loaded fries — everything
+              in one box.
+            </p>
 
           </div>
 
-          {/* RIGHT IMAGE */}
+          <div className="showcase-grid">
 
-          <div className="hero-right">
+            {
+              CATEGORIES.map((cat) => (
 
-            <img
-              src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1200"
-              alt="Cake"
-            />
+                <button
+                  className="showcase-card"
+                  key={cat.slug}
+                  onClick={() => navigate(cat.path)}
+                >
+
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    loading="lazy"
+                  />
+
+                  <div className="showcase-overlay">
+
+                    <span>{cat.label}</span>
+
+                    <h3>{cat.name}</h3>
+
+                    <p>{cat.blurb}</p>
+
+                  </div>
+
+                </button>
+
+              ))
+            }
 
           </div>
 
@@ -141,189 +171,183 @@ const [openAI, setOpenAI] = useState(false);
 
       </section>
 
-      {/* CATEGORY SECTION */}
-
-      <section className="categories">
-
-        <div className="section-header">
-
-          <p>
-            Premium Collection
-          </p>
-
-          <h2>
-            Explore Categories
-          </h2>
-
-        </div>
-
-        <div className="category-grid">
-
-          {/* CAKES */}
-
-          <div
-            className="category-card"
-            onClick={()=>
-              navigate("/cakes")
-            }
-          >
-
-            <img
-              src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?q=80&w=1200"
-              alt="Cakes"
-            />
-
-            <div className="category-overlay">
-
-              <h2>
-                Cakes
-              </h2>
-
-              <p>
-                Luxury celebration cakes
-              </p>
-
-            </div>
-
-          </div>
-
-          {/* DESSERTS */}
-
-          <div
-            className="category-card"
-            onClick={()=>
-              navigate("/desserts")
-            }
-          >
-
-            <img
-              src="https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1200"
-              alt="Desserts"
-            />
-
-            <div className="category-overlay">
-
-              <h2>
-                Desserts
-              </h2>
-
-              <p>
-                Rich premium desserts
-              </p>
-
-            </div>
-
-          </div>
-
-          {/* BROWNIES */}
-
-          <div
-            className="category-card"
-            onClick={()=>
-              navigate("/brownies")
-            }
-          >
-
-            <img
-              src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=1200"
-              alt="Brownies"
-            />
-
-            <div className="category-overlay">
-
-              <h2>
-                Brownies
-              </h2>
-
-              <p>
-                Fudgy chocolate brownies
-              </p>
-
-            </div>
-
-          </div>
-
-          {/* COOKIES */}
-
-          <div
-            className="category-card"
-            onClick={()=>
-              navigate("/cookies")
-            }
-          >
-
-            <img
-              src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?q=80&w=1200"
-              alt="Cookies"
-            />
-
-            <div className="category-overlay">
-
-              <h2>
-                Cookies
-              </h2>
-
-              <p>
-                Fresh baked cookies
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* FEATURED */}
+      {/* ============ FEATURED (BACKEND) ============ */}
 
       <Featured />
 
-      {/* AI SECTION */}
+      {/* ============ FULL MENU ============ */}
 
-      <section className="ai-section">
+      {
+        menuGroups.length > 0 && (
 
-        <div className="ai-content">
+          <section className="menu-board">
 
-          <div className="ai-left">
+            <div className="container">
 
-            <p>
-              AYZAL AI STUDIO
-            </p>
+              <div className="section-head-line menu-board-head">
 
-            <h2>
+                <span>Rate List</span>
 
-              Design Your
-              <br />
+                <h2>The Full Menu</h2>
 
-              Dream Cake
-              <br />
+                <p>
+                  All prices are in Pakistani Rupees.
+                </p>
 
-              With AI
+              </div>
 
-            </h2>
+              <div className="menu-columns">
 
-            <span>
+                {
+                  menuGroups.map((group) => (
 
-              Talk with Ayzal Assistant
-              using voice or text and
-              generate custom bakery
-              designs instantly.
+                    <div
+                      className="menu-block"
+                      key={group.slug}
+                    >
 
+                      <div className="menu-block-head">
+
+                        <h3>{group.name}</h3>
+
+                        <button
+                          onClick={() => navigate(group.path)}
+                        >
+                          See all
+                        </button>
+
+                      </div>
+
+                      <ul className="menu-list">
+
+                        {
+                          group.items.map((item) => (
+
+                            <li key={item._id}>
+
+                              <span className="menu-item-name">
+                                {item.title}
+                              </span>
+
+                              <span className="menu-dots"></span>
+
+                              <span className="menu-item-price">
+                                Rs {item.price}
+                              </span>
+
+                            </li>
+
+                          ))
+                        }
+
+                      </ul>
+
+                    </div>
+
+                  ))
+                }
+
+              </div>
+
+            </div>
+
+          </section>
+
+        )
+      }
+
+      {/* ============ VISIT / CONTACT ============ */}
+
+      <section className="visit">
+
+        <div className="container visit-inner">
+
+          <div className="visit-left">
+
+            <span className="visit-label">
+              Find Us
             </span>
 
-<button onClick={() => setOpenAI(true)}>
-  Open AI Assistant
-</button>
+            <h2>
+              Hungry?
+              <br />
+              Come straight to Munch Box.
+            </h2>
+
+            <p>
+              Dine in, takeaway or home delivery —
+              all three are available.
+            </p>
+
+            <div className="visit-rows">
+
+              <a
+                className="visit-row"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(BRAND.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+
+                <FaMapMarkerAlt />
+
+                <div>
+                  <strong>Address</strong>
+                  <p>{BRAND.address}</p>
+                </div>
+
+              </a>
+
+              <a
+                className="visit-row"
+                href={`https://wa.me/${BRAND.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+
+                <FaWhatsapp />
+
+                <div>
+                  <strong>WhatsApp</strong>
+                  <p>Send us your order and we will confirm it</p>
+                </div>
+
+              </a>
+
+            </div>
+
+            <a
+              className="btn-primary visit-call"
+              href={`tel:${BRAND.phoneDial}`}
+            >
+              <FaPhoneAlt />
+              Call Now
+            </a>
 
           </div>
 
-          <div className="ai-right">
+          <div className="visit-right">
 
-            <img
-              src="https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=1200"
-              alt="AI Cake"
-            />
+            <div className="visit-card">
+
+              <p className="visit-card-tag">
+                Opening Hours
+              </p>
+
+              <h3>{BRAND.timing}</h3>
+
+              <p className="visit-card-text">
+                Last orders are taken 20 minutes before
+                the kitchen closes.
+              </p>
+
+              <button
+                className="btn-primary"
+                onClick={() => navigate("/burgers")}
+              >
+                Start Your Order
+              </button>
+
+            </div>
 
           </div>
 
@@ -332,12 +356,6 @@ const [openAI, setOpenAI] = useState(false);
       </section>
 
       <Footer />
-
-{openAI && (
-  <div className="ai-popup-overlay">
-    <AyzalAssistant setOpenAI={setOpenAI} />
-  </div>
-)}
 
     </>
 

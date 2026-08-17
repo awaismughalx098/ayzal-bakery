@@ -21,6 +21,19 @@ build/
 server/.env
 client/.env
 
+# example files commit hone chahiye
+!.env.example
+!client/.env.example
+
+# ===========================
+# Uploaded product images
+# ===========================
+# Admin uploads are user data, not source code.
+# Keep the folder, ignore what lands in it.
+
+server/uploads/*
+!server/uploads/.gitkeep
+
 # ===========================
 # Logs
 # ===========================

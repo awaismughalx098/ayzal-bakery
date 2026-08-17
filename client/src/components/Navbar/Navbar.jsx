@@ -2,25 +2,31 @@ import "./Navbar.css";
 
 import {
   FaShoppingCart,
-  FaUser
-}
-from "react-icons/fa";
+  FaUser,
+  FaBars,
+  FaTimes,
+  FaPhoneAlt
+} from "react-icons/fa";
 
 import {
-  Link,
+  NavLink,
   useNavigate
-}
-from "react-router-dom";
+} from "react-router-dom";
 
 import {
-  useContext
-}
-from "react";
+  useContext,
+  useEffect,
+  useState
+} from "react";
 
 import {
   CartContext
-}
-from "../../context/CartContext";
+} from "../../context/contexts";
+
+import {
+  BRAND,
+  CATEGORIES
+} from "../../data/menu";
 
 /* LOGO */
 
@@ -29,119 +35,171 @@ from "../../assets/logo.png";
 
 const Navbar = () => {
 
-  const navigate =
-  useNavigate();
+  const navigate = useNavigate();
 
   const {
-    cartItems
+    totalItems
   } = useContext(CartContext);
 
-  return(
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-    <nav className="navbar">
+  /* Shrink the bar once the page scrolls */
 
-      {/* LOGO */}
+  useEffect(() => {
 
-      <div
-        className="logo-section"
-        onClick={()=>navigate("/")}
-      >
+    const onScroll = () =>
+      setScrolled(window.scrollY > 40);
 
-        <img
-          src={logo}
-          alt="AYZAL"
-          className="nav-logo"
-        />
+    onScroll();
 
-        <div className="logo-text">
+    window.addEventListener("scroll", onScroll);
 
-          <h2>
-            AYZAL
-          </h2>
+    return () =>
+      window.removeEventListener("scroll", onScroll);
 
-          <span>
-            Baking Studio
-          </span>
+  }, []);
+
+  const go = (path) => {
+    setOpen(false);
+    navigate(path);
+  };
+
+  return (
+
+    <nav
+      className={
+        scrolled
+          ? "navbar scrolled"
+          : "navbar"
+      }
+    >
+
+      <div className="nav-inner container">
+
+        {/* LOGO */}
+
+        <div
+          className="logo-section"
+          onClick={() => go("/")}
+        >
+
+          <img
+            src={logo}
+            alt={BRAND.name}
+            className="nav-logo"
+          />
+
+          <div className="logo-text">
+
+            <h2>
+              {BRAND.name}
+            </h2>
+
+            <span>
+              {BRAND.tagline}
+            </span>
+
+          </div>
 
         </div>
 
-      </div>
+        {/* LINKS */}
 
-      {/* LINKS */}
-
-      <ul className="nav-links">
-
-        <li>
-          <Link to="/">
-            Home
-          </Link>
-        </li>
-
-        <li>
-          <Link to="/cakes">
-            Cakes
-          </Link>
-        </li>
-
-        <li>
-          <Link to="/desserts">
-            Desserts
-          </Link>
-        </li>
-
-        <li>
-          <Link to="/brownies">
-            Brownies
-          </Link>
-        </li>
-
-        <li>
-          <Link to="/cookies">
-            Cookies
-          </Link>
-        </li>
-
-      </ul>
-
-      {/* ICONS */}
-
-      <div className="nav-icons">
-
-        {/* ADMIN */}
-
-        <div
-          className="nav-icon-box"
-          onClick={()=>
-            navigate("/adminlogin")
+        <ul
+          className={
+            open
+              ? "nav-links open"
+              : "nav-links"
           }
         >
 
-          <FaUser />
-
-        </div>
-
-        {/* CART */}
-
-        <div
-          className="nav-icon-box cart-icon"
-          onClick={()=>
-            navigate("/cart")
-          }
-        >
-
-          <FaShoppingCart />
+          <li>
+            <NavLink
+              to="/"
+              onClick={() => setOpen(false)}
+            >
+              Home
+            </NavLink>
+          </li>
 
           {
-            cartItems.length > 0 && (
+            CATEGORIES.map((cat) => (
 
-              <span className="cart-count">
+              <li key={cat.slug}>
+                <NavLink
+                  to={cat.path}
+                  onClick={() => setOpen(false)}
+                >
+                  {cat.name}
+                </NavLink>
+              </li>
 
-                {cartItems.length}
-
-              </span>
-
-            )
+            ))
           }
+
+          <li className="nav-call-mobile">
+            <a href={`tel:${BRAND.phoneDial}`}>
+              <FaPhoneAlt />
+              Call Now
+            </a>
+          </li>
+
+        </ul>
+
+        {/* ICONS */}
+
+        <div className="nav-icons">
+
+          <a
+            href={`tel:${BRAND.phoneDial}`}
+            className="nav-call"
+          >
+            <FaPhoneAlt />
+            Call Now
+          </a>
+
+          {/* ADMIN */}
+
+          <button
+            className="nav-icon-box"
+            onClick={() => go("/adminlogin")}
+            aria-label="Admin login"
+          >
+            <FaUser />
+          </button>
+
+          {/* CART */}
+
+          <button
+            className="nav-icon-box cart-icon"
+            onClick={() => go("/cart")}
+            aria-label="Cart"
+          >
+
+            <FaShoppingCart />
+
+            {
+              totalItems > 0 && (
+
+                <span className="cart-count">
+                  {totalItems}
+                </span>
+
+              )
+            }
+
+          </button>
+
+          {/* MOBILE TOGGLE */}
+
+          <button
+            className="nav-toggle"
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+          >
+            {open ? <FaTimes /> : <FaBars />}
+          </button>
 
         </div>
 

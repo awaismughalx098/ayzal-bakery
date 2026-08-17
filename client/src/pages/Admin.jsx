@@ -1,7 +1,7 @@
 import "./Admin.css";
 import logo from "../assets/logo.png";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   FaBoxOpen,
@@ -12,19 +12,31 @@ import {
   FaPlus,
   FaCheckCircle,
   FaClock,
+  FaSignOutAlt,
 } from "react-icons/fa";
 
-const API = "http://localhost:5000/api";
+import { api, imageUrl, errorMessage } from "../api";
+import { AuthContext } from "../context/contexts";
+import { clearProductCache } from "../hooks/useProducts";
+import { BRAND, CATEGORY_OPTIONS } from "../data/menu";
+import Seo from "../seo/Seo";
+
+const DEFAULT_CATEGORY = CATEGORY_OPTIONS[0].value;
 
 const Admin = () => {
+  const navigate = useNavigate();
+
+  const { admin, logout } = useContext(AuthContext);
+
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [notice, setNotice] = useState("");
 
   const [form, setForm] = useState({
     title: "",
     price: "",
     description: "",
-    category: "cakes",
+    category: DEFAULT_CATEGORY,
     image: null,
   });
 
@@ -32,25 +44,35 @@ const Admin = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${API}/products`);
+      const res = await api.get("/products");
       setProducts(res.data);
     } catch (error) {
-      console.log(error);
+      setNotice(errorMessage(error, "Could not load products."));
     }
   };
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(`${API}/orders`);
+      const res = await api.get("/orders");
       setOrders(res.data);
     } catch (error) {
-      console.log(error);
+      setNotice(errorMessage(error, "Could not load orders."));
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/adminlogin", { replace: true });
+  };
+
   useEffect(() => {
-    fetchProducts();
-    fetchOrders();
+    /* async wrapper so the state updates land after
+       the await, not synchronously in the effect */
+    const loadAll = async () => {
+      await Promise.all([fetchProducts(), fetchOrders()]);
+    };
+
+    loadAll();
   }, []);
 
   const deliveredOrders = orders.filter(
@@ -68,14 +90,14 @@ const Admin = () => {
 
   const updateOrderStatus = async (id, status) => {
     try {
-      await axios.put(`${API}/orders/${id}`, {
+      await api.put(`/orders/${id}`, {
         status: status.toLowerCase(),
       });
 
+      setNotice("");
       fetchOrders();
     } catch (error) {
-      console.log(error);
-      alert("Order status update nahi hua. Backend restart/check kro.");
+      setNotice(errorMessage(error, "Could not update the order status."));
     }
   };
 
@@ -93,7 +115,7 @@ const Admin = () => {
       title: "",
       price: "",
       description: "",
-      category: "cakes",
+      category: DEFAULT_CATEGORY,
       image: null,
     });
 
@@ -116,25 +138,33 @@ const Admin = () => {
       }
 
       if (editId) {
-        await axios.put(`${API}/products/${editId}`, data);
+        await api.put(`/products/${editId}`, data);
       } else {
-        await axios.post(`${API}/products/add`, data);
+        await api.post("/products/add", data);
       }
 
+      setNotice("");
       resetForm();
+
+      /* so the public site picks the change up */
+      clearProductCache();
       fetchProducts();
     } catch (error) {
-      console.log(error);
-      alert("Product save nahi hua. Backend route check kro.");
+      setNotice(errorMessage(error, "Could not save the product."));
     }
   };
 
   const deleteProduct = async (id) => {
+    if (!window.confirm("Delete this product?")) return;
+
     try {
-      await axios.delete(`${API}/products/${id}`);
+      await api.delete(`/products/${id}`);
+
+      setNotice("");
+      clearProductCache();
       fetchProducts();
     } catch (error) {
-      console.log(error);
+      setNotice(errorMessage(error, "Could not delete the product."));
     }
   };
 
@@ -145,7 +175,7 @@ const Admin = () => {
       title: product.title || "",
       price: product.price || "",
       description: product.description || "",
-      category: product.category || "cakes",
+      category: product.category || DEFAULT_CATEGORY,
       image: null,
     });
 
@@ -155,27 +185,42 @@ const Admin = () => {
     });
   };
 
-  const getImageUrl = (image) => {
-    if (!image) return "";
-    if (image.startsWith("http")) return image;
-    return `http://localhost:5000${image}`;
-  };
+  const getImageUrl = (image) => imageUrl(image);
 
   return (
     <div className="admin-page">
+      <Seo page="admin" />
+
       <aside className="admin-sidebar">
         <div className="admin-logo">
-          <img src={logo} alt="AYZAL" />
-          <h2>AYZAL</h2>
-          <p>Bakery Admin</p>
+          <img src={logo} alt={BRAND.name} />
+          <h2>{BRAND.name}</h2>
+          <p>Restaurant Admin</p>
         </div>
+
+        <button className="logout-btn" onClick={handleLogout}>
+          <FaSignOutAlt />
+          Logout
+        </button>
       </aside>
 
       <main className="admin-main">
         <div className="admin-header">
-          <h1>Admin Dashboard</h1>
-          <p>Manage products, orders and bakery revenue elegantly</p>
+          <div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage menu items, orders and daily revenue</p>
+          </div>
+
+          {admin?.email && (
+            <span className="admin-who">{admin.email}</span>
+          )}
         </div>
+
+        {notice && (
+          <div className="admin-notice" role="alert">
+            {notice}
+          </div>
+        )}
 
         <div className="stats-grid">
           <div className="stat-card">
@@ -240,10 +285,11 @@ const Admin = () => {
               onChange={handleChange}
               required
             >
-              <option value="cakes">Cakes</option>
-              <option value="deserts">Deserts</option>
-              <option value="brownies">Brownies</option>
-              <option value="cookies">Cookies</option>
+              {CATEGORY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
             </select>
 
             <input
@@ -255,10 +301,9 @@ const Admin = () => {
 
             <textarea
               name="description"
-              placeholder="Product description"
+              placeholder="Product description (optional)"
               value={form.description}
               onChange={handleChange}
-              required
             ></textarea>
 
             <div className="form-actions">
@@ -309,15 +354,37 @@ const Admin = () => {
                     <b>Address:</b> {order.address}
                   </p>
 
-                  <p>
-                    <b>Product:</b> {order.product}
-                  </p>
+                  {order.items?.length > 0 ? (
+                    <ul className="order-items">
+                      {order.items.map((item, i) => (
+                        <li key={`${order._id}-${i}`}>
+                          <span>
+                            {item.title}
+                            <small>
+                              Rs {item.price} × {item.quantity}
+                            </small>
+                          </span>
+                          <b>Rs {item.lineTotal}</b>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>
+                      <b>Product:</b> {order.product}
+                    </p>
+                  )}
+
+                  {order.instructions && (
+                    <p>
+                      <b>Note:</b> {order.instructions}
+                    </p>
+                  )}
 
                   <p>
                     <b>Quantity:</b> {order.quantity}
                   </p>
 
-                  <p>
+                  <p className="order-total-line">
                     <b>Total:</b> Rs. {order.total}
                   </p>
 
@@ -360,7 +427,7 @@ const Admin = () => {
                   <div className="admin-product-content">
                     <h3>{item.title}</h3>
                     <p>Rs. {item.price}</p>
-                    <small>{item.description}</small>
+                    {item.description && <small>{item.description}</small>}
                     <span>{item.category}</span>
 
                     <div className="product-actions">

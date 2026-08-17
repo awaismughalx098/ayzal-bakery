@@ -4,151 +4,154 @@ import { useNavigate } from "react-router-dom";
 
 import {
   useEffect,
-  useState
+  useState,
+  useMemo,
+  useContext
 } from "react";
 
-import axios from "axios";
+import { FaPlus } from "react-icons/fa";
+
+import { imageUrl } from "../../api";
+import { CartContext } from "../../context/contexts";
+import { useProducts } from "../../hooks/useProducts";
+
+const PICK_COUNT = 4;
 
 const Featured = () => {
 
   const navigate = useNavigate();
 
-  const [allProducts,setAllProducts] =
-  useState([]);
+  const { addToCart } = useContext(CartContext);
 
-  const [products,setProducts] =
-  useState([]);
+  const { products: allProducts, loading } = useProducts();
 
-  /* FETCH PRODUCTS */
+  /* Bumped on a timer to move the window along */
 
-  const fetchProducts =
-  async()=>{
+  const [rotation, setRotation] = useState(0);
 
-    try{
+  /* Show a window of PICK_COUNT items that walks
+     through the full list, so every product gets
+     its turn instead of repeating at random. */
 
-      const res =
-      await axios.get(
-        "http://localhost:5000/api/products"
-      );
+  const products = useMemo(() => {
 
-      setAllProducts(res.data);
+    if(allProducts.length <= PICK_COUNT)
+      return allProducts;
 
-      setProducts(
-        getRandomProducts(res.data)
-      );
+    const start =
+      (rotation * PICK_COUNT) % allProducts.length;
 
-    }
-
-    catch(error){
-
-      console.log(error);
-
-    }
-
-  };
-
-  /* RANDOM PRODUCTS */
-
-  const getRandomProducts =
-  (data)=>{
-
-    const shuffled =
-    [...data].sort(
-      () => Math.random() - 0.5
+    return Array.from(
+      { length: PICK_COUNT },
+      (_, i) => allProducts[(start + i) % allProducts.length]
     );
 
-    return shuffled.slice(0,4);
+  }, [allProducts, rotation]);
 
-  };
+  useEffect(() => {
 
-  /* LOAD PRODUCTS */
-
-  useEffect(()=>{
-
-    fetchProducts();
-
-  },[]);
-
-  /* AUTO CHANGE */
-
-  useEffect(()=>{
-
-    if(allProducts.length === 0)
+    if(allProducts.length <= PICK_COUNT)
       return;
 
-    const interval =
-    setInterval(()=>{
+    const interval = setInterval(() => {
 
-      setProducts(
-        getRandomProducts(
-          allProducts
-        )
-      );
+      setRotation((r) => r + 1);
 
-    },6000);
+    }, 6000);
 
-    return () =>
-      clearInterval(interval);
+    return () => clearInterval(interval);
 
-  },[allProducts]);
+  }, [allProducts]);
+
+  /* Nothing added yet — hide the whole section
+     instead of showing an empty row. */
+
+  if(loading || products.length === 0){
+    return null;
+  }
 
   return (
 
-    <section className="featured container">
+    <section className="featured">
 
-      <div className="featured-header">
+      <div className="container">
 
-        <h2>Featured Items</h2>
+        <div className="section-head-line">
 
-        <p>
-          Freshly baked delights made with love
-        </p>
+          <span>Customer Favourites</span>
 
-      </div>
+          <h2>Most Ordered</h2>
 
-      <div className="featured-grid">
+          <p>
+            The items our customers order the most.
+          </p>
 
-        {
-          products.map((item)=>(
+        </div>
 
-            <div
-              className="product-card"
-              key={item._id}
-            >
+        <div className="featured-grid">
 
-              <div className="product-image">
+          {
+            products.map((item) => (
 
-                <img
-                  src={item.image}
-                  alt={item.title}
-                />
+              <div
+                className="product-card"
+                key={item._id}
+              >
 
-              </div>
+                <div className="product-image">
 
-              <div className="product-content">
+                  <img
+                    src={imageUrl(item.image)}
+                    alt={item.title}
+                    loading="lazy"
+                  />
 
-                <h3>{item.title}</h3>
+                  <button
+                    className="quick-add"
+                    onClick={() => addToCart(item)}
+                    aria-label={`Add ${item.title} to cart`}
+                  >
+                    <FaPlus />
+                  </button>
 
-                <p>
-                  Rs. {item.price}
-                </p>
+                </div>
 
-                <button
-                  onClick={() =>
-                    navigate("/order",{
-                      state:item
-                    })
+                <div className="product-content">
+
+                  <h3>{item.title}</h3>
+
+                  {
+                    item.description && (
+                      <p className="product-desc">
+                        {item.description}
+                      </p>
+                    )
                   }
-                >
-                  Order Now
-                </button>
+
+                  <div className="product-foot">
+
+                    <span className="product-price">
+                      Rs {item.price}
+                    </span>
+
+                    <button
+                      onClick={() =>
+                        navigate("/order", { state:item })
+                      }
+                    >
+                      Order Now
+                    </button>
+
+                  </div>
+
+                </div>
 
               </div>
 
-            </div>
+            ))
+          }
 
-          ))
-        }
+        </div>
 
       </div>
 

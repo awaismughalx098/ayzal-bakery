@@ -1,117 +1,186 @@
 import "./AdminLogin.css";
+
 import logo from "../assets/logo.png";
-import {
-  useState
-}
-from "react";
 
 import {
-  useNavigate
-}
-from "react-router-dom";
+  useState,
+  useContext,
+  useEffect
+} from "react";
+
+import {
+  useNavigate,
+  useLocation,
+  Link
+} from "react-router-dom";
+
+import {
+  FaLock,
+  FaEnvelope,
+  FaEye,
+  FaEyeSlash,
+  FaArrowLeft
+} from "react-icons/fa";
+
+import { AuthContext } from "../context/contexts";
+import { BRAND } from "../data/menu";
+import Seo from "../seo/Seo";
 
 const AdminLogin = () => {
 
-  const navigate =
-  useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [
-    email,
-    setEmail
-  ] = useState("");
+  const {
+    login,
+    isLoggedIn,
+    checking
+  } = useContext(AuthContext);
 
-  const [
-    password,
-    setPassword
-  ] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin =
-  (e)=>{
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  /* Send the user back where they came from */
+
+  const from =
+  location.state?.from || "/admin";
+
+  /* Already signed in — go straight to the dashboard */
+
+  useEffect(() => {
+
+    if(!checking && isLoggedIn){
+      navigate(from, { replace:true });
+    }
+
+  }, [checking, isLoggedIn, from, navigate]);
+
+  const handleLogin = async (e) => {
 
     e.preventDefault();
 
-    if(
+    setError("");
+    setBusy(true);
 
-      email ===
-      "admin@ayzal.com"
+    const result = await login(
+      email.trim(),
+      password
+    );
 
-      &&
+    setBusy(false);
 
-      password ===
-      "123456"
+    if(result.ok){
 
-    ){
-
-      navigate("/admin");
+      navigate(from, { replace:true });
 
     }
 
     else{
 
-      alert(
-        "Invalid Credentials"
-      );
+      setError(result.message);
+      setPassword("");
 
     }
 
   };
 
-  return(
+  return (
 
     <div className="admin-login-page">
+
+      <Seo page="adminlogin" />
+
+
+      <Link to="/" className="login-back">
+        <FaArrowLeft />
+        Back to site
+      </Link>
 
       <div className="admin-login-card">
 
         <div className="login-logo">
 
-         <img
-  src={logo}
-  alt="AYZAL"
-/>
+          <img
+            src={logo}
+            alt={BRAND.name}
+          />
 
         </div>
 
-        <h1>
-          Admin Login
-        </h1>
+        <h1>Admin Login</h1>
 
-        <p>
-          Welcome back to
-          AYZAL Baking Studio
+        <p className="login-sub">
+          {BRAND.name} dashboard
         </p>
 
-        <form
-          onSubmit={handleLogin}
-        >
+        <form onSubmit={handleLogin}>
 
-          <input
-            type="email"
-            placeholder="Admin Email"
-            value={email}
-            onChange={(e)=>
-              setEmail(
-                e.target.value
-              )
-            }
-            required
-          />
+          {
+            error && (
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e)=>
-              setPassword(
-                e.target.value
-              )
-            }
-            required
-          />
+              <div
+                className="login-error"
+                role="alert"
+              >
+                {error}
+              </div>
 
-          <button type="submit">
+            )
+          }
 
-            Login
+          <div className="login-field">
 
+            <FaEnvelope />
+
+            <input
+              type="email"
+              placeholder="Admin Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+              required
+            />
+
+          </div>
+
+          <div className="login-field">
+
+            <FaLock />
+
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+
+            <button
+              type="button"
+              className="login-eye"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={
+                showPassword
+                  ? "Hide password"
+                  : "Show password"
+              }
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+
+          </div>
+
+          <button
+            type="submit"
+            className="login-btn"
+            disabled={busy}
+          >
+            {busy ? "Signing in..." : "Login"}
           </button>
 
         </form>

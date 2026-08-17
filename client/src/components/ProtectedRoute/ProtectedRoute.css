@@ -1,0 +1,38 @@
+.auth-checking{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  background:var(--maroon-darkest);
+  padding:24px;
+}
+
+.auth-spinner{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:3px solid rgba(255,243,226,.2);
+  border-top-color:var(--gold);
+  animation:auth-spin .8s linear infinite;
+}
+
+.auth-checking p{
+  font-size:.88rem;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:rgba(255,243,226,.7);
+}
+
+@keyframes auth-spin{
+  to{ transform:rotate(360deg); }
+}
+
+@media (prefers-reduced-motion:reduce){
+
+  .auth-spinner{
+    animation-duration:2s;
+  }
+
+}

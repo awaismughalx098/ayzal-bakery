@@ -15,7 +15,8 @@ new mongoose.Schema({
   },
 
   description:{
-    type:String
+    type:String,
+    default:""
   },
 
   category:{

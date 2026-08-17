@@ -3,10 +3,24 @@ import "./Footer.css";
 import {
   FaFacebookF,
   FaInstagram,
-  FaWhatsapp
+  FaWhatsapp,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaClock
 } from "react-icons/fa";
 
+import { Link } from "react-router-dom";
+
+import logo from "../../assets/logo.png";
+
+import {
+  BRAND,
+  CATEGORIES
+} from "../../data/menu";
+
 const Footer = () => {
+
+  const year = new Date().getFullYear();
 
   return (
 
@@ -14,53 +28,81 @@ const Footer = () => {
 
       <div className="container footer-grid">
 
+        {/* ---- ABOUT ---- */}
+
         <div className="footer-about">
 
-          <h2>AYZAL</h2>
+          <div className="footer-brand">
+
+            <img
+              src={logo}
+              alt={BRAND.name}
+            />
+
+            <div>
+              <h2>{BRAND.name}</h2>
+              <span>{BRAND.tagline}</span>
+            </div>
+
+          </div>
 
           <p>
-            Freshly baked cakes, desserts and sweet memories
-            crafted specially for your celebrations.
+            Okara's own fast food spot. Zinger burgers,
+            loaded fries, wings and wraps — all fresh,
+            all hot, straight into the box.
           </p>
 
         </div>
 
+        {/* ---- MENU LINKS ---- */}
+
         <div className="footer-links">
 
-          <h3>Quick Links</h3>
+          <h3>Menu</h3>
 
-          <a href="/">Home</a>
+          {
+            CATEGORIES.map((cat) => (
 
-          <a href="/cakes">Cakes</a>
+              <Link
+                to={cat.path}
+                key={cat.slug}
+              >
+                {cat.name}
+              </Link>
 
-          <a href="/desserts">Desserts</a>
-
-          <a href="/cookies">Cookies</a>
+            ))
+          }
 
         </div>
 
-       <div className="footer-contact">
+        {/* ---- CONTACT ---- */}
 
-  <h3>Contact</h3>
+        <div className="footer-contact">
 
-  <p>
-    Head Kasim Pur Farid Kanal Phase 2
-    Near The Country Public School
-    Multan
-  </p>
+          <h3>Contact</h3>
 
-  <p>
-    +92 304 1011465
-  </p>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(BRAND.address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaMapMarkerAlt />
+            <span>{BRAND.address}</span>
+          </a>
 
-  <a
-    href="mailto:ayzalstudiooo@gmail.com"
-    className="footer-email"
-  >
-    ayzalstudiooo@gmail.com
-  </a>
+          <a href={`tel:${BRAND.phoneDial}`}>
+            <FaPhoneAlt />
+            <span>Call Now</span>
+          </a>
 
-</div>
+          <p className="footer-timing">
+            <FaClock />
+            <span>{BRAND.timing}</span>
+          </p>
+
+        </div>
+
+        {/* ---- SOCIALS ---- */}
 
         <div className="footer-socials">
 
@@ -68,25 +110,41 @@ const Footer = () => {
 
           <div className="social-icons">
 
-            <FaFacebookF />
-
             <a
-              href="https://www.instagram.com/ayzal_baking_studio?utm_source=qr&igsh=NmJ5aWo1ZWtlYm1q"
+              href={BRAND.facebook}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Facebook"
+            >
+              <FaFacebookF />
+            </a>
+
+            <a
+              href={BRAND.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
             >
               <FaInstagram />
             </a>
 
             <a
-              href="https://wa.me/923041011465"
+              href={`https://wa.me/${BRAND.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="WhatsApp"
             >
               <FaWhatsapp />
             </a>
 
           </div>
+
+          <a
+            className="footer-order-btn"
+            href={`tel:${BRAND.phoneDial}`}
+          >
+            Call To Order
+          </a>
 
         </div>
 
@@ -94,15 +152,20 @@ const Footer = () => {
 
       <div className="footer-bottom">
 
-        <p>
-          © 2026 Ayzal Baking Studio. All Rights Reserved.
-        </p>
+        <div className="container">
+
+          <p>
+            © {year} {BRAND.name}. All Rights Reserved.
+          </p>
+
+        </div>
 
       </div>
 
     </footer>
 
   );
+
 };
 
 export default Footer;
