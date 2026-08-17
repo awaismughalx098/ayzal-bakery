@@ -235,6 +235,22 @@
   color:var(--muted);
 }
 
+/* Upload a file, or paste a link — either works */
+
+.image-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.image-field label{
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
 .product-form input:focus,
 .product-form select:focus,
 .product-form textarea:focus{

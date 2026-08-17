@@ -38,6 +38,7 @@ const Admin = () => {
     description: "",
     category: DEFAULT_CATEGORY,
     image: null,
+    imageUrl: "",
   });
 
   const [editId, setEditId] = useState(null);
@@ -117,6 +118,7 @@ const Admin = () => {
       description: "",
       category: DEFAULT_CATEGORY,
       image: null,
+      imageUrl: "",
     });
 
     setEditId(null);
@@ -135,6 +137,8 @@ const Admin = () => {
 
       if (form.image) {
         data.append("image", form.image);
+      } else if (form.imageUrl.trim()) {
+        data.append("imageUrl", form.imageUrl.trim());
       }
 
       if (editId) {
@@ -177,6 +181,12 @@ const Admin = () => {
       description: product.description || "",
       category: product.category || DEFAULT_CATEGORY,
       image: null,
+      /* show the current link so it can be edited,
+         but only when it is a linked image */
+      imageUrl:
+        product.image && !product.image.startsWith("/uploads/")
+          ? product.image
+          : "",
     });
 
     window.scrollTo({
@@ -292,12 +302,26 @@ const Admin = () => {
               ))}
             </select>
 
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-            />
+            <div className="image-field">
+              <label>Photo — upload a file</label>
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="image-field">
+              <label>…or paste an image link</label>
+              <input
+                type="url"
+                name="imageUrl"
+                placeholder="https://..."
+                value={form.imageUrl}
+                onChange={handleChange}
+              />
+            </div>
 
             <textarea
               name="description"

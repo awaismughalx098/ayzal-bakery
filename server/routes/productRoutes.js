@@ -105,6 +105,52 @@ const badId = (res) =>
     message:"Invalid product id."
   });
 
+/* ============================================
+   IMAGE URL
+   --------------------------------------------
+   A photo can either be uploaded or linked. Only
+   plain http(s) links are accepted — no data: or
+   javascript: — and the browser is what loads it,
+   so the server never fetches the address.
+   ============================================ */
+
+const cleanImageUrl = (value) => {
+
+  const raw = String(value || "").trim();
+
+  if(!raw)
+    return { url:"", error:null };
+
+  let parsed;
+
+  try{
+    parsed = new URL(raw);
+  }
+  catch{
+    return {
+      url:"",
+      error:"That image link is not a valid URL."
+    };
+  }
+
+  if(!["http:","https:"].includes(parsed.protocol)){
+    return {
+      url:"",
+      error:"The image link must start with http:// or https://"
+    };
+  }
+
+  if(raw.length > 600){
+    return {
+      url:"",
+      error:"That image link is too long."
+    };
+  }
+
+  return { url:parsed.toString(), error:null };
+
+};
+
 /* Validate the body — the client is not trusted */
 
 const validateProduct = (body, { partial = false } = {}) => {
@@ -211,11 +257,31 @@ router.post(
 
       if(req.file){
 
+        /* An uploaded file wins over a pasted link */
+
         const saved =
         await saveImage(req.file.buffer);
 
         image = saved.url;
         imageId = saved.id || "";
+
+      }
+
+      else if(req.body.imageUrl){
+
+        const linked =
+        cleanImageUrl(req.body.imageUrl);
+
+        if(linked.error){
+
+          return res.status(400).json({
+            success:false,
+            message:linked.error
+          });
+
+        }
+
+        image = linked.url;
 
       }
 
@@ -328,6 +394,38 @@ router.put(
         product.imageId = saved.id || "";
 
         deleteImage(oldImage, oldImageId);
+
+      }
+
+      else if(req.body.imageUrl !== undefined){
+
+        const linked =
+        cleanImageUrl(req.body.imageUrl);
+
+        if(linked.error){
+
+          return res.status(400).json({
+            success:false,
+            message:linked.error
+          });
+
+        }
+
+        /* Only touch the image when a link was actually
+           given, so saving other fields does not wipe
+           the existing photo. */
+
+        if(linked.url){
+
+          const oldImage = product.image;
+          const oldImageId = product.imageId;
+
+          product.image = linked.url;
+          product.imageId = "";
+
+          deleteImage(oldImage, oldImageId);
+
+        }
 
       }
 
