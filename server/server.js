@@ -266,8 +266,14 @@ app.use(
   express.static(
     path.join(__dirname, "uploads"),
     {
-      /* Never let an uploaded file execute */
+      /* Filenames are unique per upload and never
+         reused, so a long cache is safe and saves
+         the round trip on repeat visits. */
+      maxAge: "30d",
+      immutable: true,
+
       setHeaders:(res)=>{
+        /* Never let an uploaded file execute */
         res.setHeader(
           "Content-Disposition",
           "inline"

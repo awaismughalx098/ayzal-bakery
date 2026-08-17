@@ -26,6 +26,14 @@ new mongoose.Schema({
 
   image:{
     type:String
+  },
+
+  /* Cloudinary public_id, so the old file can be
+     removed when the image is replaced or deleted.
+     Empty for images kept on local disk. */
+  imageId:{
+    type:String,
+    default:""
   }
 
 },{

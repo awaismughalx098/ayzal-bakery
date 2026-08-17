@@ -7,12 +7,6 @@ express.Router();
 const multer =
 require("multer");
 
-const path =
-require("path");
-
-const fs =
-require("fs");
-
 const mongoose =
 require("mongoose");
 
@@ -23,98 +17,46 @@ const {
   protect
 } = require("../middleware/authMiddleware");
 
-/* ===================================== */
-/* UPLOAD FOLDER */
-/* ===================================== */
-
-const uploadDir =
-path.join(
-  __dirname,
-  "..",
-  "uploads"
-);
-
-if(!fs.existsSync(uploadDir)){
-
-  fs.mkdirSync(
-    uploadDir,
-    { recursive:true }
-  );
-
-}
+const {
+  saveImage,
+  deleteImage
+} = require("../config/imageStore");
 
 /* ===================================== */
-/* STORAGE + FILE VALIDATION */
+/* UPLOAD HANDLING */
 /* ===================================== */
 
-const ALLOWED_EXT =
-[".jpg",".jpeg",".png",".webp",".gif"];
+/* The file is held in memory, then shrunk and sent
+   on to the image store. Nothing the client sends
+   ever lands on disk under its own name. */
 
 const ALLOWED_MIME =
 [
   "image/jpeg",
   "image/png",
   "image/webp",
-  "image/gif"
+  "image/gif",
+  "image/avif"
 ];
-
-const storage =
-multer.diskStorage({
-
-  destination:(req,file,cb)=>{
-
-    cb(null, uploadDir);
-
-  },
-
-  filename:(req,file,cb)=>{
-
-    /* The original filename cannot be trusted, so we
-       generate our own and stop anything like
-       "../../x.js" from doing path traversal. */
-
-    const ext =
-    path.extname(file.originalname)
-      .toLowerCase();
-
-    const safeExt =
-    ALLOWED_EXT.includes(ext)
-      ? ext
-      : ".jpg";
-
-    cb(
-      null,
-      `${Date.now()}-${Math.round(Math.random() * 1e9)}${safeExt}`
-    );
-
-  }
-
-});
 
 const upload =
 multer({
 
-  storage,
+  storage: multer.memoryStorage(),
 
   limits:{
-    fileSize: 5 * 1024 * 1024,  /* 5 MB */
+    /* Generous, because a modern phone photo can be
+       15 MB. It gets shrunk to a few dozen KB before
+       anything is stored, and only one file is held
+       in memory at a time. */
+    fileSize: 20 * 1024 * 1024,
     files: 1
   },
 
   fileFilter:(req,file,cb)=>{
 
-    const ext =
-    path.extname(file.originalname)
-      .toLowerCase();
-
-    if(
-      ALLOWED_EXT.includes(ext) &&
-      ALLOWED_MIME.includes(file.mimetype)
-    ){
-
+    if(ALLOWED_MIME.includes(file.mimetype))
       return cb(null, true);
-
-    }
 
     cb(
       new Error(
@@ -137,7 +79,7 @@ const uploadImage = (req,res,next) => {
 
     const message =
       error.code === "LIMIT_FILE_SIZE"
-        ? "The image must be smaller than 5MB."
+        ? "The image must be smaller than 20MB."
         : error.message || "Image upload failed.";
 
     res.status(400).json({
@@ -263,15 +205,24 @@ router.post(
 
       }
 
+      let image = "";
+      let imageId = "";
+
+      if(req.file){
+
+        const saved =
+        await saveImage(req.file.buffer);
+
+        image = saved.url;
+        imageId = saved.id || "";
+
+      }
+
       const product =
       new Product({
-
         ...value,
-
-        image: req.file
-          ? `/uploads/${req.file.filename}`
-          : ""
-
+        image,
+        imageId
       });
 
       await product.save();
@@ -353,22 +304,20 @@ router.put(
       if(Number.isFinite(value.price))
         product.price = value.price;
 
-      /* NEW IMAGE — remove the previous file */
+      /* NEW IMAGE — swap it in, then drop the old one */
 
       if(req.file){
 
-        const old = product.image;
+        const oldImage = product.image;
+        const oldImageId = product.imageId;
 
-        product.image =
-        `/uploads/${req.file.filename}`;
+        const saved =
+        await saveImage(req.file.buffer);
 
-        if(old && old.startsWith("/uploads/")){
+        product.image = saved.url;
+        product.imageId = saved.id || "";
 
-          fs.promises
-            .unlink(path.join(uploadDir, path.basename(old)))
-            .catch(()=>{ /* file was already gone */ });
-
-        }
+        deleteImage(oldImage, oldImageId);
 
       }
 
@@ -427,18 +376,7 @@ router.delete(
 
       /* Remove the uploaded image too */
 
-      if(
-        product.image &&
-        product.image.startsWith("/uploads/")
-      ){
-
-        fs.promises
-          .unlink(
-            path.join(uploadDir, path.basename(product.image))
-          )
-          .catch(()=>{});
-
-      }
+      deleteImage(product.image, product.imageId);
 
       res.json({
         success:true,
