@@ -34,6 +34,10 @@ client/.env
 server/uploads/*
 !server/uploads/.gitkeep
 
+# The old bakery repo used a capital U. Windows treats
+# both as the same folder, so ignore that spelling too.
+server/Uploads/
+
 # ===========================
 # Logs
 # ===========================
