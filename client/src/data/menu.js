@@ -57,6 +57,10 @@ export const CATEGORIES = [
     name: "Dips",
     label: "Sauces & Dips",
     blurb: "Five sauces, flat Rs 50 each",
+    /* Small add-on items: shown as a compact price
+       list instead of photo cards, so no image is
+       needed for each sauce. */
+    compact: true,
     image:
       "https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1200&auto=format&fit=crop",
   },
@@ -66,6 +70,7 @@ export const CATEGORIES = [
     name: "Drinks",
     label: "Chilled Drinks",
     blurb: "Coke, Next Cola and Sting — bottles to family size",
+    compact: true,
     image:
       "https://images.unsplash.com/photo-1554866585-cd94860890b7?q=80&w=1200&auto=format&fit=crop",
   },

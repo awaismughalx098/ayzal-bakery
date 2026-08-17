@@ -16,7 +16,7 @@ import Footer from "../components/Footer/Footer";
 import Seo from "../seo/Seo";
 
 import { CartContext } from "../context/contexts";
-import { imageUrl } from "../api";
+import ProductImage from "../components/ProductImage/ProductImage";
 
 const Cart = () => {
 
@@ -104,8 +104,8 @@ const Cart = () => {
                           key={item._id}
                         >
 
-                          <img
-                            src={imageUrl(item.image)}
+                          <ProductImage
+                            src={item.image}
                             alt={item.title}
                           />
 

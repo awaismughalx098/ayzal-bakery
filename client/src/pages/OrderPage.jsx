@@ -22,7 +22,8 @@ import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import Seo from "../seo/Seo";
 
-import { api, imageUrl, errorMessage } from "../api";
+import { api, errorMessage } from "../api";
+import ProductImage from "../components/ProductImage/ProductImage";
 import { BRAND } from "../data/menu";
 import { CartContext } from "../context/contexts";
 
@@ -281,9 +282,10 @@ Choose an item from the menu first,
 
               <div className="order-image">
 
-                <img
-                  src={imageUrl(product.image)}
+                <ProductImage
+                  src={product.image}
                   alt={heading}
+                  loading="eager"
                 />
 
               </div>

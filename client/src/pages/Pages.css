@@ -193,6 +193,111 @@
   color:var(--maroon-darkest);
 }
 
+/* ---------- COMPACT LIST (dips, drinks) ---------- */
+/* Small add-on items. A price list reads better than
+   photo cards, and nothing needs an image uploaded. */
+
+.compact-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-width:760px;
+  margin-inline:auto;
+}
+
+.compact-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  grid-template-areas:
+    "info  price"
+    "acts  acts";
+  align-items:center;
+  gap:10px 14px;
+  background:var(--light);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  transition:.22s ease;
+}
+
+.compact-row:hover{
+  border-color:var(--gold);
+  box-shadow:var(--shadow-soft);
+}
+
+.compact-info{
+  grid-area:info;
+  min-width:0;
+}
+
+.compact-info h3{
+  font-size:1rem;
+  font-weight:700;
+  color:var(--maroon);
+  line-height:1.3;
+}
+
+.compact-info p{
+  margin-top:5px;
+  font-size:.83rem;
+  line-height:1.55;
+  color:var(--muted);
+}
+
+.compact-price{
+  grid-area:price;
+  font-family:var(--display);
+  font-size:1.3rem;
+  color:var(--red);
+  letter-spacing:.5px;
+  white-space:nowrap;
+  align-self:start;
+}
+
+.compact-actions{
+  grid-area:acts;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.compact-actions .cart-btn{
+  width:44px;
+  height:44px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(193,18,31,.1);
+  color:var(--red);
+  font-size:.9rem;
+  transition:.25s ease;
+  flex-shrink:0;
+}
+
+.compact-actions .cart-btn:hover{
+  background:var(--red);
+  color:#fff;
+}
+
+.compact-actions .order-btn{
+  flex:1;
+  background:var(--maroon);
+  color:var(--cream);
+  font-size:.78rem;
+  font-weight:600;
+  letter-spacing:.4px;
+  padding:11px 20px;
+  border-radius:60px;
+  transition:.25s ease;
+  white-space:nowrap;
+}
+
+.compact-actions .order-btn:hover{
+  background:var(--gold);
+  color:var(--maroon-darkest);
+}
+
 /* ---------- EMPTY ---------- */
 
 .empty-state{
@@ -338,6 +443,23 @@
 
   .call-strip-btn{
     width:auto;
+  }
+
+  /* Everything on one row once there is space */
+  .compact-row{
+    grid-template-columns:1fr auto auto;
+    grid-template-areas:"info price acts";
+    gap:18px;
+    padding:16px 22px;
+  }
+
+  .compact-price{
+    align-self:center;
+    font-size:1.4rem;
+  }
+
+  .compact-actions .order-btn{
+    flex:0 0 auto;
   }
 
   .empty-state{

@@ -15,7 +15,7 @@ import Footer from "../components/Footer/Footer";
 import Seo from "../seo/Seo";
 
 import { CartContext } from "../context/contexts";
-import { imageUrl } from "../api";
+import ProductImage from "../components/ProductImage/ProductImage";
 import { useProducts } from "../hooks/useProducts";
 
 import {
@@ -151,6 +151,67 @@ const CategoryPage = ({ slug }) => {
                   </div>
 
                 )
+                : category.compact
+                ? (
+
+                  /* Small add-on items — a price list rather
+                     than photo cards, so no image is needed */
+
+                  <ul className="compact-list">
+
+                    {
+                      products.map((item) => (
+
+                        <li
+                          className="compact-row"
+                          key={item._id}
+                        >
+
+                          <div className="compact-info">
+
+                            <h3>{item.title}</h3>
+
+                            {
+                              item.description && (
+                                <p>{item.description}</p>
+                              )
+                            }
+
+                          </div>
+
+                          <span className="compact-price">
+                            Rs {item.price}
+                          </span>
+
+                          <div className="compact-actions">
+
+                            <button
+                              className="cart-btn"
+                              onClick={() => addToCart(item)}
+                              aria-label={`Add ${item.title} to cart`}
+                            >
+                              <FaShoppingBasket />
+                            </button>
+
+                            <button
+                              className="order-btn"
+                              onClick={() =>
+                                navigate("/order", { state:item })
+                              }
+                            >
+                              Order
+                            </button>
+
+                          </div>
+
+                        </li>
+
+                      ))
+                    }
+
+                  </ul>
+
+                )
                 : (
 
                   <div className="products-grid">
@@ -165,10 +226,9 @@ const CategoryPage = ({ slug }) => {
 
                           <div className="food-image">
 
-                            <img
-                              src={imageUrl(item.image)}
+                            <ProductImage
+                              src={item.image}
                               alt={item.title}
-                              loading="lazy"
                             />
 
                             <span className="food-badge">

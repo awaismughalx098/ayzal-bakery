@@ -11,7 +11,7 @@ import {
 
 import { FaPlus } from "react-icons/fa";
 
-import { imageUrl } from "../../api";
+import ProductImage from "../ProductImage/ProductImage";
 import { CartContext } from "../../context/contexts";
 import { useProducts } from "../../hooks/useProducts";
 
@@ -100,10 +100,9 @@ const Featured = () => {
 
                 <div className="product-image">
 
-                  <img
-                    src={imageUrl(item.image)}
+                  <ProductImage
+                    src={item.image}
                     alt={item.title}
-                    loading="lazy"
                   />
 
                   <button
