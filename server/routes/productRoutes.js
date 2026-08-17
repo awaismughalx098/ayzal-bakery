@@ -19,7 +19,8 @@ const {
 
 const {
   saveImage,
-  deleteImage
+  deleteImage,
+  ImageError
 } = require("../config/imageStore");
 
 /* ===================================== */
@@ -238,6 +239,15 @@ router.post(
 
       console.error("[products:add]", error.message);
 
+      /* An image problem is the admin's to fix, so say
+         what it was instead of a blank server error. */
+      if(error instanceof ImageError){
+        return res.status(400).json({
+          success:false,
+          message:error.message
+        });
+      }
+
       res.status(500).json({
         success:false,
         message:"Could not save the product."
@@ -333,6 +343,13 @@ router.put(
     catch(error){
 
       console.error("[products:update]", error.message);
+
+      if(error instanceof ImageError){
+        return res.status(400).json({
+          success:false,
+          message:error.message
+        });
+      }
 
       res.status(500).json({
         success:false,

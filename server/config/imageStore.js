@@ -25,9 +25,33 @@ const cloudinary = require("cloudinary").v2;
 const MAX_WIDTH = 1000;
 const WEBP_QUALITY = 78;
 
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-const apiKey = process.env.CLOUDINARY_API_KEY;
-const apiSecret = process.env.CLOUDINARY_API_SECRET;
+const clean = (value) =>
+  String(value || "")
+    .trim()
+    /* people often paste the value with quotes around it */
+    .replace(/^["']|["']$/g, "");
+
+let cloudName = clean(process.env.CLOUDINARY_CLOUD_NAME);
+let apiKey = clean(process.env.CLOUDINARY_API_KEY);
+let apiSecret = clean(process.env.CLOUDINARY_API_SECRET);
+
+/* Cloudinary's dashboard shows a single connection
+   string first, so accept that too:
+   cloudinary://<api_key>:<api_secret>@<cloud_name> */
+
+const url = clean(process.env.CLOUDINARY_URL);
+
+if (url.startsWith("cloudinary://")) {
+  const match = url.match(
+    /^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/
+  );
+
+  if (match) {
+    apiKey = apiKey || match[1];
+    apiSecret = apiSecret || match[2];
+    cloudName = cloudName || match[3];
+  }
+}
 
 const useCloudinary = Boolean(cloudName && apiKey && apiSecret);
 
@@ -39,11 +63,11 @@ if (useCloudinary) {
     secure: true,
   });
 
-  console.log("Image store: Cloudinary");
+  console.log(`Image store: Cloudinary (cloud "${cloudName}")`);
 } else {
   console.warn(
     "Image store: local disk. On Render these files are lost on every deploy — " +
-      "set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET."
+      "set CLOUDINARY_URL, or CLOUDINARY_CLOUD_NAME + CLOUDINARY_API_KEY + CLOUDINARY_API_SECRET."
   );
 }
 
@@ -67,23 +91,54 @@ const optimise = async (buffer) =>
 
 /* ---------- save ---------- */
 
+/* Thrown with a message worth showing the admin,
+   so a misconfigured key does not look like a
+   generic server error. */
+
+class ImageError extends Error {}
+
 const saveImage = async (buffer) => {
-  const optimised = await optimise(buffer);
+  let optimised;
+
+  try {
+    optimised = await optimise(buffer);
+  } catch (error) {
+    console.error("[imageStore] resize failed:", error.message);
+    throw new ImageError(
+      "That image could not be processed. Try a normal jpg or png."
+    );
+  }
 
   if (useCloudinary) {
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder: "munchbox/products",
-            resource_type: "image",
-            format: "webp",
-          },
-          (error, uploaded) =>
-            error ? reject(error) : resolve(uploaded)
-        )
-        .end(optimised);
-    });
+    let result;
+
+    try {
+      result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              folder: "munchbox/products",
+              resource_type: "image",
+              format: "webp",
+            },
+            (error, uploaded) =>
+              error ? reject(error) : resolve(uploaded)
+          )
+          .end(optimised);
+      });
+    } catch (error) {
+      /* Wrong key, wrong cloud name, quota reached... */
+      console.error(
+        "[imageStore] Cloudinary upload failed:",
+        error?.message || error
+      );
+
+      throw new ImageError(
+        `Cloudinary rejected the upload: ${
+          error?.message || "check CLOUDINARY_URL on the server"
+        }`
+      );
+    }
 
     return {
       url: result.secure_url,
@@ -125,6 +180,7 @@ const deleteImage = async (image, publicId) => {
 module.exports = {
   saveImage,
   deleteImage,
+  ImageError,
   uploadDir,
   useCloudinary,
   MAX_WIDTH,

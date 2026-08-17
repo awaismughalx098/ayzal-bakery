@@ -152,10 +152,16 @@ const Footer = () => {
 
       <div className="footer-bottom">
 
-        <div className="container">
+        <div className="container footer-bottom-inner">
 
           <p>
             © {year} {BRAND.name}. All Rights Reserved.
+          </p>
+
+          <p className="footer-credit">
+            Designed &amp; developed by
+            {" "}
+            <span>ByteNova Technologies</span>
           </p>
 
         </div>
